@@ -10,6 +10,8 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/challenges/presentation/screens/challenges_screen.dart';
 import '../../features/challenges/presentation/screens/create_challenge_screen.dart';
 import '../../features/teams/presentation/screens/teams_screen.dart';
+import '../../features/teams/presentation/screens/create_team_screen.dart';
+import '../../features/teams/presentation/screens/team_detail_screen.dart';
 import '../../features/ranking/presentation/screens/ranking_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 
@@ -42,7 +44,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // Auth routes (no bottom bar)
       GoRoute(
         path: '/login',
         name: 'login',
@@ -58,15 +59,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
-
-      // Create challenge (full screen, no bottom bar)
       GoRoute(
         path: '/challenges/create',
         name: 'createChallenge',
         builder: (context, state) => const CreateChallengeScreen(),
       ),
-
-      // Main app with bottom navigation
+      GoRoute(
+        path: '/teams/create',
+        name: 'createTeam',
+        builder: (context, state) => const CreateTeamScreen(),
+      ),
+      GoRoute(
+        path: '/teams/:teamId',
+        name: 'teamDetail',
+        builder: (context, state) {
+          final teamId = state.pathParameters['teamId']!;
+          return TeamDetailScreen(teamId: teamId);
+        },
+      ),
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
         routes: [
