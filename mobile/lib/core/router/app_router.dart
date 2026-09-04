@@ -14,6 +14,7 @@ import '../../features/teams/presentation/screens/create_team_screen.dart';
 import '../../features/teams/presentation/screens/team_detail_screen.dart';
 import '../../features/ranking/presentation/screens/ranking_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -76,6 +77,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final teamId = state.pathParameters['teamId']!;
           return TeamDetailScreen(teamId: teamId);
         },
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        name: 'editProfile',
+        builder: (context, state) => const EditProfileScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),

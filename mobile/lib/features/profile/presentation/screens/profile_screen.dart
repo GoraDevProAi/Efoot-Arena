@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../features/auth/providers/auth_provider.dart';
 import '../../../../shared/models/user_model.dart';
@@ -16,6 +17,11 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Profil'),
         actions: [
+          IconButton(
+            onPressed: () => context.push('/profile/edit'),
+            icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
+            tooltip: 'Modifier',
+          ),
           IconButton(
             onPressed: () {
               ref.read(authControllerProvider.notifier).signOut();
