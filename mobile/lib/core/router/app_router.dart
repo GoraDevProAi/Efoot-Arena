@@ -8,6 +8,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/main_shell.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/challenges/presentation/screens/challenges_screen.dart';
+import '../../features/challenges/presentation/screens/create_challenge_screen.dart';
 import '../../features/teams/presentation/screens/teams_screen.dart';
 import '../../features/ranking/presentation/screens/ranking_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -56,6 +57,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+
+      // Create challenge (full screen, no bottom bar)
+      GoRoute(
+        path: '/challenges/create',
+        name: 'createChallenge',
+        builder: (context, state) => const CreateChallengeScreen(),
       ),
 
       // Main app with bottom navigation
