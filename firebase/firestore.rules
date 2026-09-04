@@ -87,5 +87,14 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if false; // Only Cloud Functions can write rankings
     }
+
+    // Notification queue (client writes, Cloud Function sends FCM)
+    match /notification_queue/{id} {
+      allow create: if isAuthenticated()
+        && request.resource.data.toUserId is string
+        && request.resource.data.title is string;
+      allow read, update, delete: if false; // only backend
+    }
   }
 }
+

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../shared/models/challenge_model.dart';
 import '../../shared/models/user_model.dart';
 import '../constants/app_constants.dart';
+import 'notification_queue.dart';
 
 class ChallengeService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -65,6 +66,15 @@ class ChallengeService {
       'completedAt': null,
     });
 
+    // Notify opponent
+    try {
+      final challenger = await getUser(challengerId);
+      await NotificationQueue.challengeReceived(
+        toUserId: opponentId,
+        fromUsername: challenger?.username ?? 'Un joueur',
+      );
+    } catch (_) {}
+
     return doc.id;
   }
 
@@ -85,6 +95,15 @@ class ChallengeService {
       'status': ChallengeStatus.accepted.name,
       'acceptedAt': Timestamp.now(),
     });
+
+    // Notify challenger
+    try {
+      final opponent = await getUser(userId);
+      await NotificationQueue.challengeAccepted(
+        toUserId: data['challengerId'] as String,
+        byUsername: opponent?.username ?? 'Un joueur',
+      );
+    } catch (_) {}
   }
 
   /// Decline a challenge

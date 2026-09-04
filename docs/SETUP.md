@@ -83,3 +83,33 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=efoot-arena
 7. ⬜ Système de défis 1v1
 8. ⬜ Classement
 9. ⬜ Notifications
+
+## 6. Notifications push (FCM)
+
+### Côté app (déjà codé)
+- Permission demandée au lancement
+- Token FCM sauvé dans `users/{uid}.fcmToken`
+- Notifications locales en foreground
+- Tap → navigation vers Défis / Équipes
+
+### Côté Firebase (à faire une fois)
+1. Console Firebase → **Cloud Messaging** (activé par défaut)
+2. Plan **Blaze** requis pour Cloud Functions
+3. Déployer la function :
+
+```bash
+cd firebase
+firebase init functions   # si pas déjà fait
+cd functions && npm install
+firebase deploy --only functions
+firebase deploy --only firestore:rules
+```
+
+La function `sendQueuedNotification` lit `notification_queue` et envoie le push.
+
+### Android
+Dans `AndroidManifest.xml`, les permissions INTERNET et POST_NOTIFICATIONS (Android 13+) sont gérées par les plugins Firebase en général. Vérifie si besoin :
+
+```xml
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+```

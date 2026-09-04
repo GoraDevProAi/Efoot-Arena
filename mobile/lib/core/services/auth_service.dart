@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../shared/models/user_model.dart';
 import '../constants/app_constants.dart';
+import 'notification_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,6 +26,7 @@ class AuthService {
         password: password,
       );
       await _updateLastActive(credential.user!.uid);
+      await NotificationService().syncTokenForCurrentUser();
       return credential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -73,6 +75,7 @@ class AuthService {
 
       // Update display name in Firebase Auth
       await user.updateDisplayName(username.trim());
+      await NotificationService().syncTokenForCurrentUser();
 
       return credential;
     } on FirebaseAuthException catch (e) {
@@ -128,6 +131,7 @@ class AuthService {
         await _updateLastActive(user.uid);
       }
 
+      await NotificationService().syncTokenForCurrentUser();
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -160,6 +164,7 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
+    await NotificationService().clearTokenOnLogout();
     await Future.wait([
       _auth.signOut(),
       _googleSignIn.signOut(),
