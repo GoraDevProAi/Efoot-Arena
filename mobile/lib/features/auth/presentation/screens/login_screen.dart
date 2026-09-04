@@ -59,6 +59,86 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+
+  Future<void> _showForgotPassword() async {
+    final emailController = TextEditingController(text: _emailController.text);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: const Text('Mot de passe oublié'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Entre ton email pour recevoir un lien de réinitialisation.',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'ton@email.com',
+                  prefixIcon: Icon(Icons.email_outlined, size: 20),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text(
+                'Envoyer',
+                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != true || !mounted) return;
+
+    final email = emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email invalide'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    await ref.read(authControllerProvider.notifier).resetPassword(email);
+    final state = ref.read(authControllerProvider);
+    if (!mounted) return;
+
+    if (state.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.error.toString()),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email envoyé ! Vérifie ta boîte de réception.'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
@@ -190,9 +270,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: TextButton(
                   onPressed: isLoading
                       ? null
-                      : () {
-                          // TODO: Forgot password dialog
-                        },
+                      : _showForgotPassword,
                   child: const Text(
                     'Mot de passe oublié ?',
                     style: TextStyle(

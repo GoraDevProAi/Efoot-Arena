@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../features/auth/providers/auth_provider.dart';
 import '../../../../shared/models/user_model.dart';
+import '../../../challenges/providers/challenge_provider.dart';
+import '../../../../shared/models/challenge_model.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -325,56 +327,35 @@ class _HomeContent extends StatelessWidget {
 
         const SliverToBoxAdapter(child: SizedBox(height: 28)),
 
-        // Recent activity placeholder
+        // Recent activity
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Activité récente',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Activité récente',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go('/challenges'),
+                      child: const Text(
+                        'Voir tout',
+                        style: TextStyle(color: AppColors.primary, fontSize: 13),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 14),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.history_rounded,
-                        size: 40,
-                        color: AppColors.textMuted.withValues(alpha: 0.5),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Aucune activité pour le moment',
-                        style: TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Lance ton premier défi pour commencer !',
-                        style: TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 8),
+                const _RecentChallenges(),
               ],
             ),
           ),
@@ -482,6 +463,110 @@ class _ActionCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+class _RecentChallenges extends ConsumerWidget {
+  const _RecentChallenges();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final challengesAsync = ref.watch(userChallengesProvider);
+
+    return challengesAsync.when(
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (challenges) {
+        final recent = challenges.take(5).toList();
+        if (recent.isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: const Column(
+              children: [
+                Icon(Icons.history_rounded, size: 40, color: AppColors.textMuted),
+                SizedBox(height: 12),
+                Text(
+                  'Aucune activité pour le moment',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 14),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Lance ton premier défi pour commencer !',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Column(
+          children: recent.map((c) {
+            String status;
+            Color color;
+            switch (c.status) {
+              case ChallengeStatus.pending:
+                status = 'En attente';
+                color = AppColors.warning;
+                break;
+              case ChallengeStatus.accepted:
+                status = 'En cours';
+                color = AppColors.info;
+                break;
+              case ChallengeStatus.completed:
+                status = c.challengerScore != null
+                    ? '${c.challengerScore} - ${c.opponentScore}'
+                    : 'Terminé';
+                color = AppColors.success;
+                break;
+              default:
+                status = c.status.name;
+                color = AppColors.textMuted;
+            }
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.sports_esports, color: color, size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Défi 1v1',
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                    ),
+                  ),
+                  Text(
+                    status,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }
