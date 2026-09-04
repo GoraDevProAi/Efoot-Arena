@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "895853704319",
+    "project_id": "efoot-arena-c288b",
+    "storage_bucket": "efoot-arena-c288b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895853704319:android:04be7c304e6fde37273b4a",
+        "android_client_info": {
+          "package_name": "com.efootarena.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "895853704319-adkaddqlajie05n9lfeja8a7a3cv4spk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4ktDvNXONFg5sHEC4yyG4EYnWmC42N6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "895853704319-adkaddqlajie05n9lfeja8a7a3cv4spk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

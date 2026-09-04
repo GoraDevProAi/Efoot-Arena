@@ -1,9 +1,6 @@
-// File generated / updated for eFoot Arena
+// File generated for eFoot Arena
 // Project ID: efoot-arena-c288b
-//
-// IMPORTANT:
-// Remplace les valeurs YOUR_* par les vraies clés depuis Firebase Console
-// ou lance : flutterfire configure
+// Android package: com.efootarena.app
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
@@ -26,29 +23,32 @@ class DefaultFirebaseOptions {
     }
   }
 
+  // Web — à compléter quand tu ajouteras une app Web dans Firebase
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: 'YOUR_WEB_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+    apiKey: 'AIzaSyC4ktDvNXONFg5sHEC4yyG4EYnWmC42N6Q',
+    appId: '1:895853704319:web:REPLACE_ME',
+    messagingSenderId: '895853704319',
     projectId: 'efoot-arena-c288b',
     authDomain: 'efoot-arena-c288b.firebaseapp.com',
-    storageBucket: 'efoot-arena-c288b.appspot.com',
+    storageBucket: 'efoot-arena-c288b.firebasestorage.app',
   );
 
+  // Android — configuré depuis google-services.json
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+    apiKey: 'AIzaSyC4ktDvNXONFg5sHEC4yyG4EYnWmC42N6Q',
+    appId: '1:895853704319:android:04be7c304e6fde37273b4a',
+    messagingSenderId: '895853704319',
     projectId: 'efoot-arena-c288b',
-    storageBucket: 'efoot-arena-c288b.appspot.com',
+    storageBucket: 'efoot-arena-c288b.firebasestorage.app',
   );
 
+  // iOS — à compléter quand tu ajouteras une app iOS
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+    apiKey: 'AIzaSyC4ktDvNXONFg5sHEC4yyG4EYnWmC42N6Q',
+    appId: '1:895853704319:ios:REPLACE_ME',
+    messagingSenderId: '895853704319',
     projectId: 'efoot-arena-c288b',
-    storageBucket: 'efoot-arena-c288b.appspot.com',
+    storageBucket: 'efoot-arena-c288b.firebasestorage.app',
     iosBundleId: 'com.efootarena.app',
   );
 }
