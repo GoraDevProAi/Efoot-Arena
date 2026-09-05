@@ -118,6 +118,32 @@ class ChallengeController extends StateNotifier<AsyncValue<void>> {
     }
   }
 
+
+  Future<String?> startMatchmaking() async {
+    state = const AsyncValue.loading();
+    try {
+      final user = _ref.read(authStateProvider).valueOrNull;
+      if (user == null) throw Exception('Non connecté');
+
+      final opponent =
+          await _service.findMatchmakingOpponent(user.uid);
+      if (opponent == null) {
+        throw Exception('Aucun adversaire disponible pour le moment');
+      }
+
+      final id = await _service.createChallenge(
+        challengerId: user.uid,
+        opponentId: opponent.uid,
+        message: 'Matchmaking automatique',
+      );
+      state = const AsyncValue.data(null);
+      return id;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      return null;
+    }
+  }
+
   Future<List<UserModel>> searchUsers(String query) async {
     final user = _ref.read(authStateProvider).valueOrNull;
     return _service.searchUsers(query, excludeUid: user?.uid);

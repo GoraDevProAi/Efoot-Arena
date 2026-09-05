@@ -282,6 +282,38 @@ class ChallengeService {
   }
 
   /// Search users by username (for challenging)
+
+  /// Simple matchmaking: pick a random other user (not self).
+  /// Prefer users with a username set.
+  Future<UserModel?> findMatchmakingOpponent(String excludeUid) async {
+    final snapshot = await _users
+        .orderBy('stats.points', descending: true)
+        .limit(40)
+        .get();
+
+    final candidates = snapshot.docs
+        .map((d) => UserModel.fromFirestore(d))
+        .where((u) =>
+            u.uid != excludeUid &&
+            u.username.isNotEmpty)
+        .toList();
+
+    if (candidates.isEmpty) {
+      // Fallback: any other user
+      final all = await _users.limit(30).get();
+      final others = all.docs
+          .map((d) => UserModel.fromFirestore(d))
+          .where((u) => u.uid != excludeUid)
+          .toList();
+      if (others.isEmpty) return null;
+      others.shuffle();
+      return others.first;
+    }
+
+    candidates.shuffle();
+    return candidates.first;
+  }
+
   Future<List<UserModel>> searchUsers(String query, {String? excludeUid}) async {
     if (query.trim().length < 2) return [];
 

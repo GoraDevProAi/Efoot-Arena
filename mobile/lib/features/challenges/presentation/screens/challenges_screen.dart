@@ -30,6 +30,31 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
     super.dispose();
   }
 
+
+  Future<void> _matchmaking() async {
+    final id = await ref
+        .read(challengeControllerProvider.notifier)
+        .startMatchmaking();
+    final state = ref.read(challengeControllerProvider);
+    if (!mounted) return;
+    if (state.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.error.toString()),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Adversaire trouvé ! Défi envoyé.'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      _tabController.animateTo(0);
+    }
+  }
+
   void _showReportResult(ChallengeModel challenge) {
     showModalBottomSheet(
       context: context,
@@ -51,6 +76,11 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
       appBar: AppBar(
         title: const Text('Défis'),
         actions: [
+          IconButton(
+            onPressed: () => _matchmaking(),
+            icon: const Icon(Icons.shuffle_rounded, color: AppColors.info),
+            tooltip: 'Matchmaking',
+          ),
           IconButton(
             onPressed: () => context.push('/challenges/create'),
             icon: const Icon(Icons.add_circle, color: AppColors.primary),
@@ -104,15 +134,29 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/challenges/create'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.black,
-        icon: const Icon(Icons.sports_esports),
-        label: const Text(
-          'Défier',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'mm',
+            onPressed: _matchmaking,
+            backgroundColor: AppColors.info,
+            foregroundColor: Colors.black,
+            icon: const Icon(Icons.shuffle_rounded),
+            label: const Text('Matchmaking',
+                style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'create',
+            onPressed: () => context.push('/challenges/create'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.black,
+            icon: const Icon(Icons.sports_esports),
+            label: const Text('Défier',
+                style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+        ],
       ),
     );
   }
