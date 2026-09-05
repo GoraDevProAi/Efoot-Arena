@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../shared/models/team_model.dart';
 import '../../shared/models/user_model.dart';
 import '../constants/app_constants.dart';
 
 class TeamService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   CollectionReference get _teams =>
       _firestore.collection(AppConstants.teamsCollection);
@@ -279,4 +282,26 @@ class TeamService {
       await _teams.doc(teamId).update(updates);
     }
   }
+
+  Future<String> uploadTeamLogo({
+    required String teamId,
+    required String userId,
+    required File file,
+  }) async {
+    final teamDoc = await _teams.doc(teamId).get();
+    if (!teamDoc.exists) throw Exception('Équipe introuvable');
+    final data = teamDoc.data() as Map<String, dynamic>;
+    final ownerId = data['ownerId'] as String;
+    final adminIds = List<String>.from(data['adminIds'] ?? []);
+    if (userId != ownerId && !adminIds.contains(userId)) {
+      throw Exception('Non autorisé');
+    }
+
+    final ref = _storage.ref().child('team_logos/$teamId.jpg');
+    await ref.putFile(file, SettableMetadata(contentType: 'image/jpeg'));
+    final url = await ref.getDownloadURL();
+    await _teams.doc(teamId).update({'logoUrl': url});
+    return url;
+  }
+
 }

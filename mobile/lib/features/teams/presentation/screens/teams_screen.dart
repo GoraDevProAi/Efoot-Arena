@@ -225,8 +225,16 @@ class _TeamCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.info.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
+                image: team.logoUrl != null
+                    ? DecorationImage(
+                        image: NetworkImage(team.logoUrl!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
-              child: const Icon(Icons.shield, color: AppColors.info, size: 24),
+              child: team.logoUrl == null
+                  ? const Icon(Icons.shield, color: AppColors.info, size: 24)
+                  : null,
             ),
             const SizedBox(width: 12),
             Expanded(

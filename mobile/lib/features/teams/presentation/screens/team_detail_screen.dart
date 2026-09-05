@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -153,14 +155,71 @@ class _TeamDetailBody extends ConsumerWidget {
             ),
             child: Column(
               children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: AppColors.info.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(18),
+                GestureDetector(
+                  onTap: isOwner
+                      ? () async {
+                          final picker = ImagePicker();
+                          final x = await picker.pickImage(
+                            source: ImageSource.gallery,
+                            maxWidth: 512,
+                            maxHeight: 512,
+                            imageQuality: 85,
+                          );
+                          if (x == null) return;
+                          await ref
+                              .read(teamControllerProvider.notifier)
+                              .uploadLogo(team.id, File(x.path));
+                          final st = ref.read(teamControllerProvider);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(st.hasError
+                                    ? st.error.toString()
+                                    : 'Logo mis à jour'),
+                                backgroundColor: st.hasError
+                                    ? AppColors.error
+                                    : AppColors.success,
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: AppColors.info.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(18),
+                          image: team.logoUrl != null
+                              ? DecorationImage(
+                                  image: NetworkImage(team.logoUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: team.logoUrl == null
+                            ? const Icon(Icons.shield,
+                                color: AppColors.info, size: 36)
+                            : null,
+                      ),
+                      if (isOwner)
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt,
+                                size: 12, color: Colors.black),
+                          ),
+                        ),
+                    ],
                   ),
-                  child: const Icon(Icons.shield, color: AppColors.info, size: 36),
                 ),
                 const SizedBox(height: 14),
                 Text(

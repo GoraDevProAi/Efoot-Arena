@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/team_service.dart';
 import '../../../shared/models/team_model.dart';
@@ -98,6 +99,20 @@ class TeamController extends StateNotifier<AsyncValue<void>> {
         kickerId: user.uid,
         memberId: memberId,
       );
+      state = const AsyncValue.data(null);
+      _ref.invalidate(userTeamProvider);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+
+  Future<void> uploadLogo(String teamId, File file) async {
+    state = const AsyncValue.loading();
+    try {
+      final user = _ref.read(authStateProvider).valueOrNull;
+      if (user == null) throw Exception('Non connecté');
+      await _service.uploadTeamLogo(teamId: teamId, userId: user.uid, file: file);
       state = const AsyncValue.data(null);
       _ref.invalidate(userTeamProvider);
     } catch (e, st) {
