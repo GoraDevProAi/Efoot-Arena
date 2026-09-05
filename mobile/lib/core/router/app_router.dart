@@ -22,6 +22,8 @@ import '../../features/tournaments/presentation/screens/create_tournament_screen
 import '../../features/tournaments/presentation/screens/tournament_detail_screen.dart';
 import '../../features/premium/presentation/screens/premium_screen.dart';
 import '../../features/chat/presentation/screens/chat_screen.dart';
+import '../../features/highlights/presentation/screens/highlights_screen.dart';
+import '../../features/highlights/presentation/screens/create_highlight_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -115,6 +117,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/chat',
         name: 'chat',
         builder: (context, state) => const ChatScreen(),
+      ),
+      GoRoute(
+        path: '/highlights',
+        name: 'highlights',
+        builder: (context, state) => const HighlightsScreen(),
+      ),
+      GoRoute(
+        path: '/highlights/create',
+        name: 'createHighlight',
+        builder: (context, state) => const CreateHighlightScreen(),
       ),
       GoRoute(
         path: '/tournaments',

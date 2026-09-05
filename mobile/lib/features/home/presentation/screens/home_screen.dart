@@ -330,11 +330,11 @@ class _HomeContent extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _ActionCard(
-                        icon: Icons.person_rounded,
-                        title: 'Mon profil',
-                        subtitle: 'Stats',
+                        icon: Icons.movie_filter_rounded,
+                        title: 'Highlights',
+                        subtitle: 'Clips',
                         color: AppColors.elite,
-                        onTap: () => context.go('/profile'),
+                        onTap: () => context.go('/highlights'),
                       ),
                     ),
                   ],
