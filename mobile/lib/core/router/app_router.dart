@@ -12,6 +12,8 @@ import '../../features/challenges/presentation/screens/create_challenge_screen.d
 import '../../features/teams/presentation/screens/teams_screen.dart';
 import '../../features/teams/presentation/screens/create_team_screen.dart';
 import '../../features/teams/presentation/screens/team_detail_screen.dart';
+import '../../features/teams/presentation/screens/team_battles_screen.dart';
+import '../../features/teams/presentation/screens/challenge_team_screen.dart';
 import '../../features/ranking/presentation/screens/ranking_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
@@ -72,6 +74,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/teams/create',
         name: 'createTeam',
         builder: (context, state) => const CreateTeamScreen(),
+      ),
+      GoRoute(
+        path: '/teams/:teamId/battles',
+        name: 'teamBattles',
+        builder: (context, state) {
+          final teamId = state.pathParameters['teamId']!;
+          return TeamBattlesScreen(teamId: teamId);
+        },
+      ),
+      GoRoute(
+        path: '/teams/:teamId/challenge',
+        name: 'challengeTeam',
+        builder: (context, state) {
+          final teamId = state.pathParameters['teamId']!;
+          return ChallengeTeamScreen(myTeamId: teamId);
+        },
       ),
       GoRoute(
         path: '/teams/:teamId',

@@ -278,6 +278,17 @@ class _TeamDetailBody extends ConsumerWidget {
             ),
           ),
 
+          const SizedBox(height: 16),
+          if (isMember)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => context.push('/teams/${team.id}/battles'),
+                icon: const Icon(Icons.sports_mma, size: 18),
+                label: const Text('Clan Wars'),
+              ),
+            ),
+
           const SizedBox(height: 24),
 
           const Text(

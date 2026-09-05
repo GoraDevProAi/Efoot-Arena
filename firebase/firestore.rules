@@ -89,6 +89,15 @@ service cloud.firestore {
     }
 
 
+
+    // Team battles (Clan Wars)
+    match /team_battles/{battleId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if false;
+    }
+
     // Tournaments
     match /tournaments/{tournamentId} {
       allow read: if isAuthenticated();
