@@ -15,6 +15,9 @@ import '../../features/teams/presentation/screens/team_detail_screen.dart';
 import '../../features/ranking/presentation/screens/ranking_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../../features/tournaments/presentation/screens/tournaments_screen.dart';
+import '../../features/tournaments/presentation/screens/create_tournament_screen.dart';
+import '../../features/tournaments/presentation/screens/tournament_detail_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -82,6 +85,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile/edit',
         name: 'editProfile',
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/tournaments',
+        name: 'tournaments',
+        builder: (context, state) => const TournamentsScreen(),
+      ),
+      GoRoute(
+        path: '/tournaments/create',
+        name: 'createTournament',
+        builder: (context, state) => const CreateTournamentScreen(),
+      ),
+      GoRoute(
+        path: '/tournaments/:tournamentId',
+        name: 'tournamentDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['tournamentId']!;
+          return TournamentDetailScreen(tournamentId: id);
+        },
       ),
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),

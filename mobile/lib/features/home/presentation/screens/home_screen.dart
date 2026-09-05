@@ -301,11 +301,11 @@ class _HomeContent extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _ActionCard(
-                        icon: Icons.leaderboard_rounded,
-                        title: 'Classement',
-                        subtitle: 'Voir le top',
+                        icon: Icons.emoji_events_rounded,
+                        title: 'Tournois',
+                        subtitle: 'Compétitions',
                         color: AppColors.gold,
-                        onTap: () => context.go('/ranking'),
+                        onTap: () => context.go('/tournaments'),
                       ),
                     ),
                     const SizedBox(width: 12),
