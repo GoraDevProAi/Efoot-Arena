@@ -17,6 +17,7 @@ import '../../features/teams/presentation/screens/challenge_team_screen.dart';
 import '../../features/ranking/presentation/screens/ranking_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../../features/profile/presentation/screens/settings_screen.dart';
 import '../../features/tournaments/presentation/screens/tournaments_screen.dart';
 import '../../features/tournaments/presentation/screens/create_tournament_screen.dart';
 import '../../features/tournaments/presentation/screens/tournament_detail_screen.dart';
@@ -109,6 +110,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile/edit',
         name: 'editProfile',
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: '/premium',

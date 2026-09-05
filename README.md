@@ -4,120 +4,74 @@
 
 Plateforme compétitive eFootball Mobile — Afrique → International.
 
-## Structure du projet
+## Stack
 
-```
-efoot-arena/
-├── mobile/                 # Application Flutter (Android + iOS)
-│   ├── lib/
-│   │   ├── core/           # Theme, constants, services, router
-│   │   ├── features/       # Auth, Profile, Teams, Challenges, Ranking, Home
-│   │   └── shared/         # Models + Widgets réutilisables
-│   ├── assets/
-│   └── pubspec.yaml
-│
-├── web/                    # Site web Next.js 15 (App Router)
-│   ├── src/
-│   └── package.json
-│
-├── firebase/               # Configuration Firebase
-│   ├── firestore.rules
-│   └── (indexes, functions à venir)
-│
-├── shared/                 # Types / constantes partagés (futur)
-└── docs/                   # Documentation
-```
+- **Mobile** : Flutter (Riverpod, GoRouter, Firebase)
+- **Web** : Next.js (landing)
+- **Backend** : Firebase (Auth, Firestore, Storage, FCM, Cloud Functions)
 
-## Stack technique
+## Fonctionnalités (MVP+)
 
-| Partie          | Technologie                          |
-|-----------------|--------------------------------------|
-| Mobile          | Flutter + Riverpod + GoRouter        |
-| Web             | Next.js 15 + TypeScript + Tailwind   |
-| Backend         | Firebase (Auth, Firestore, FCM, Storage) |
-| State           | Riverpod                             |
-| Navigation      | GoRouter                             |
+| Module | Description |
+|--------|-------------|
+| Auth | Email, Google, onboarding, mot de passe oublié |
+| Home | Stats, actions rapides, activité récente |
+| Profil | Stats, édition, avatar, Premium badge |
+| Défis 1v1 | Créer, accepter, score, matchmaking auto |
+| Équipes | Créer, rejoindre, logo, kick |
+| Clan Wars | Battles inter-équipes |
+| Classement | Mondial / région / pays |
+| Tournois | Créer, inscrire, démarrer, vainqueur |
+| Chat | Salon communautaire temps réel |
+| Highlights | Publier images / likes |
+| Marketplace | Annonces coaching / comptes |
+| Premium | Freemium (activation test 30j) |
+| Notifications | FCM + file `notification_queue` |
+| Réglages | Hub vers toutes les sections |
 
-## MVP – Fonctionnalités prioritaires
-
-1. Authentification (Email + Google)
-2. Profil joueur (création + édition)
-3. Système d’équipes
-4. Défis 1v1
-5. Stats basiques (W/L, winrate, streak)
-6. Classement simple
-7. Notifications push
-
-## Démarrage rapide
-
-### 1. Firebase
-
-1. Crée un projet sur [Firebase Console](https://console.firebase.google.com)
-2. Active **Authentication** (Email/Password + Google)
-3. Crée une base **Firestore**
-4. Copie les configs dans `mobile/lib/firebase_options.dart`
-5. Déploie les règles : `firebase deploy --only firestore:rules`
-
-### 2. Mobile (Flutter)
+## Lancer l'app mobile
 
 ```bash
-cd mobile
+git clone https://github.com/GoraDevProAi/Efoot-Arena.git
+cd Efoot-Arena/mobile
+
+# Générer android/ ios/ si absents
+flutter create . --project-name efoot_arena --org com.efootarena
+
+# Vérifier applicationId = com.efootarena.app
 flutter pub get
-flutterfire configure   # génère firebase_options.dart
 flutter run
 ```
 
-### 3. Web (Next.js)
+Voir aussi : [docs/RUN_APP.md](docs/RUN_APP.md) · [docs/SETUP.md](docs/SETUP.md)
+
+## Firebase
+
+Projet : `efoot-arena-c288b`
+
+À activer :
+1. Authentication (Email + Google)
+2. Firestore + déployer `firebase/firestore.rules`
+3. Storage + `firebase/storage.rules`
+4. Cloud Messaging
+5. Cloud Functions (plan Blaze) pour les push — `firebase/functions`
 
 ```bash
-cd web
-npm install
-npm run dev
+firebase deploy --only firestore:rules,storage
+cd firebase/functions && npm install && firebase deploy --only functions
 ```
 
-## Architecture Firestore
+## Structure
 
 ```
-users/{uid}
-  - username, email, country, region, avatarUrl, bio
-  - stats: { wins, losses, winrate, streak, points, rank }
-  - teamId, isPremium, createdAt, lastActive
-
-teams/{teamId}
-  - name, logoUrl, ownerId, memberIds, adminIds
-  - stats, country, region, isOpen
-
-challenges/{challengeId}
-  - challengerId, opponentId, status
-  - winnerId, scores, createdAt, expiresAt
-
-matches/{matchId}
-rankings/{region}
+efoot-arena/
+├── mobile/          # Flutter app
+├── web/             # Next.js landing
+├── firebase/        # rules + functions
+├── docs/            # guides
+└── shared/          # (réservé)
 ```
 
-## Progression actuelle
+## Repo
 
-- [x] Structure monorepo
-- [x] Modèles de données (User, Team, Challenge)
-- [x] AuthService complet
-- [x] Thème dark (eFootball style)
-- [x] Router + protection des routes
-- [x] Règles Firestore de base
-- [ ] Écrans Auth (Login / Register / Onboarding)
-- [ ] Écran Home
-- [ ] Profil + Édition
-- [ ] Teams
-- [ ] Challenges 1v1
-- [ ] Ranking
-- [ ] Configuration Firebase réelle
-
-## Prochaines étapes
-
-1. Configurer le vrai projet Firebase
-2. Créer les écrans d’authentification
-3. Implémenter le flow complet d’inscription
-4. Construire l’UI Home + Profil
-
----
-
-**Slogan :** Compete. Dominate. Rise.
+https://github.com/GoraDevProAi/Efoot-Arena

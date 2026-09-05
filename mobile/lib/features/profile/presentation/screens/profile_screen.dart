@@ -23,6 +23,11 @@ class ProfileScreen extends ConsumerWidget {
             tooltip: 'Modifier',
           ),
           IconButton(
+            onPressed: () => context.push('/settings'),
+            icon: const Icon(Icons.settings_outlined, color: AppColors.textSecondary),
+            tooltip: 'Réglages',
+          ),
+          IconButton(
             onPressed: () {
               ref.read(authControllerProvider.notifier).signOut();
             },
