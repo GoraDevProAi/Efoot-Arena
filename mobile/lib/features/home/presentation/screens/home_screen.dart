@@ -140,10 +140,17 @@ class _HomeContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Notifications button
+                IconButton(
+                  onPressed: () => context.push('/chat'),
+                  icon: const Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: AppColors.textSecondary,
+                  ),
+                  tooltip: 'Chat',
+                ),
                 IconButton(
                   onPressed: () {
-                    // TODO: notifications
+                    // In-app notification center later
                   },
                   icon: const Icon(
                     Icons.notifications_outlined,

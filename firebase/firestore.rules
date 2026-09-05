@@ -90,6 +90,18 @@ service cloud.firestore {
 
 
 
+
+    // Community chat
+    match /chat_rooms/{roomId}/messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 500;
+      allow update, delete: if false;
+    }
+
     // Team battles (Clan Wars)
     match /team_battles/{battleId} {
       allow read: if isAuthenticated();
