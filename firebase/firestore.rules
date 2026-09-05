@@ -92,6 +92,17 @@ service cloud.firestore {
 
 
 
+
+    // Marketplace
+    match /marketplace_listings/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.sellerId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.sellerId == request.auth.uid;
+      allow delete: if false;
+    }
+
     // Highlights
     match /highlights/{id} {
       allow read: if isAuthenticated();

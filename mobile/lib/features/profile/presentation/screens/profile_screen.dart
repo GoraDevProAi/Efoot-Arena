@@ -169,6 +169,15 @@ class _ProfileContent extends StatelessWidget {
               label: Text(user.isPremium ? 'Gérer Premium' : 'Passer Premium'),
             ),
           ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.push('/marketplace'),
+              icon: const Icon(Icons.storefront, size: 18),
+              label: const Text('Marketplace'),
+            ),
+          ),
 
           const SizedBox(height: 28),
 

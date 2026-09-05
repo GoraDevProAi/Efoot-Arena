@@ -24,6 +24,8 @@ import '../../features/premium/presentation/screens/premium_screen.dart';
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/highlights/presentation/screens/highlights_screen.dart';
 import '../../features/highlights/presentation/screens/create_highlight_screen.dart';
+import '../../features/marketplace/presentation/screens/marketplace_screen.dart';
+import '../../features/marketplace/presentation/screens/create_listing_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -127,6 +129,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/highlights/create',
         name: 'createHighlight',
         builder: (context, state) => const CreateHighlightScreen(),
+      ),
+      GoRoute(
+        path: '/marketplace',
+        name: 'marketplace',
+        builder: (context, state) => const MarketplaceScreen(),
+      ),
+      GoRoute(
+        path: '/marketplace/create',
+        name: 'createListing',
+        builder: (context, state) => const CreateListingScreen(),
       ),
       GoRoute(
         path: '/tournaments',
