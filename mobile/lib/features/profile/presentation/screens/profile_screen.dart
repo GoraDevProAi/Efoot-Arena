@@ -106,22 +106,67 @@ class _ProfileContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: _rankColor(user.stats.rank).withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _rankColor(user.stats.rank).withValues(alpha: 0.5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _rankColor(user.stats.rank).withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _rankColor(user.stats.rank).withValues(alpha: 0.5),
+                  ),
+                ),
+                child: Text(
+                  user.stats.rank,
+                  style: TextStyle(
+                    color: _rankColor(user.stats.rank),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
               ),
-            ),
-            child: Text(
-              user.stats.rank,
-              style: TextStyle(
-                color: _rankColor(user.stats.rank),
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
+              if (user.isPremium) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.gold.withValues(alpha: 0.5)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.workspace_premium, size: 14, color: AppColors.gold),
+                      SizedBox(width: 4),
+                      Text(
+                        'Premium',
+                        style: TextStyle(
+                          color: AppColors.gold,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.push('/premium'),
+              icon: Icon(
+                Icons.workspace_premium,
+                size: 18,
+                color: user.isPremium ? AppColors.gold : AppColors.primary,
               ),
+              label: Text(user.isPremium ? 'Gérer Premium' : 'Passer Premium'),
             ),
           ),
 

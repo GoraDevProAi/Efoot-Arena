@@ -94,13 +94,25 @@ class _HomeContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Salut, ${user.username}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'Salut, ${user.username}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (user.isPremium) ...[
+                            const SizedBox(width: 6),
+                            const Icon(Icons.workspace_premium,
+                                size: 18, color: AppColors.gold),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 2),
                       Row(

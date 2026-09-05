@@ -20,6 +20,7 @@ import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/tournaments/presentation/screens/tournaments_screen.dart';
 import '../../features/tournaments/presentation/screens/create_tournament_screen.dart';
 import '../../features/tournaments/presentation/screens/tournament_detail_screen.dart';
+import '../../features/premium/presentation/screens/premium_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -103,6 +104,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile/edit',
         name: 'editProfile',
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/premium',
+        name: 'premium',
+        builder: (context, state) => const PremiumScreen(),
       ),
       GoRoute(
         path: '/tournaments',
