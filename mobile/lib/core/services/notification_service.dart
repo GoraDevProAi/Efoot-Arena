@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../constants/app_constants.dart';
 
-/// Handles FCM + local notifications
+/// Handles FCM + local notifications (mobile).
+/// On web, FCM is skipped until a proper service worker is added.
 class NotificationService {
   static final NotificationService _instance = NotificationService._();
   factory NotificationService() => _instance;
@@ -28,77 +30,87 @@ class NotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    // Permissions
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.denied) {
-      // User denied — still mark init to avoid loops
+    // Web needs firebase-messaging-sw.js + correct MIME type.
+    // Skip entirely so the app does not crash with a white screen.
+    if (kIsWeb) {
+      debugPrint('NotificationService: skipped on web (no service worker).');
       _initialized = true;
       return;
     }
 
-    // Local notifications (foreground)
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosInit = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-    await _local.initialize(
-      const InitializationSettings(android: androidInit, iOS: iosInit),
-      onDidReceiveNotificationResponse: _onLocalNotificationTap,
-    );
+    try {
+      final settings = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
 
-    await _local
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_channel);
+      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        _initialized = true;
+        return;
+      }
 
-    // Foreground messages
-    FirebaseMessaging.onMessage.listen(_showForegroundNotification);
+      const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const iosInit = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+      await _local.initialize(
+        const InitializationSettings(android: androidInit, iOS: iosInit),
+        onDidReceiveNotificationResponse: _onLocalNotificationTap,
+      );
 
-    // Background / opened from notification
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageNavigation);
+      await _local
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(_channel);
 
-    // App opened from terminated state via notification
-    final initial = await _messaging.getInitialMessage();
-    if (initial != null) {
-      _handleMessageNavigation(initial);
+      FirebaseMessaging.onMessage.listen(_showForegroundNotification);
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageNavigation);
+
+      final initial = await _messaging.getInitialMessage();
+      if (initial != null) {
+        _handleMessageNavigation(initial);
+      }
+
+      await _saveToken();
+      _messaging.onTokenRefresh.listen((token) => _saveToken(token: token));
+    } catch (e, st) {
+      debugPrint('NotificationService initialize error: $e\n$st');
     }
-
-    // Token
-    await _saveToken();
-    _messaging.onTokenRefresh.listen((token) => _saveToken(token: token));
 
     _initialized = true;
   }
 
   Future<void> _saveToken({String? token}) async {
+    if (kIsWeb) return;
+
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final fcmToken = token ?? await _messaging.getToken();
-    if (fcmToken == null) return;
+    try {
+      final fcmToken = token ?? await _messaging.getToken();
+      if (fcmToken == null) return;
 
-    await _firestore
-        .collection(AppConstants.usersCollection)
-        .doc(user.uid)
-        .set(
-      {
-        'fcmToken': fcmToken,
-        'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-      },
-      SetOptions(merge: true),
-    );
+      await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(user.uid)
+          .set(
+        {
+          'fcmToken': fcmToken,
+          'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('FCM token save failed: $e');
+    }
   }
 
-  /// Call after login to refresh token on user doc
   Future<void> syncTokenForCurrentUser() async {
+    if (kIsWeb) return;
     await _saveToken();
   }
 
@@ -138,13 +150,11 @@ class NotificationService {
   }
 
   void _navigateFromData(Map<String, dynamic> data) {
-    // Navigation is handled via a global callback set by the app
     final type = data['type'] as String?;
     final route = data['route'] as String?;
     onNotificationTap?.call(type: type, route: route, data: data);
   }
 
-  /// Set this from main/router to handle deep links
   static void Function({
     String? type,
     String? route,
@@ -152,6 +162,7 @@ class NotificationService {
   })? onNotificationTap;
 
   Future<void> clearTokenOnLogout() async {
+    if (kIsWeb) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     try {
@@ -163,9 +174,7 @@ class NotificationService {
   }
 }
 
-/// Background handler — must be top-level
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Firebase is already initialized in background isolate on most setups
-  // Heavy work should go to Cloud Functions; keep this light
+  // Keep light — heavy work belongs in Cloud Functions
 }

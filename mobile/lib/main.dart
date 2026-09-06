@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,20 +12,30 @@ import 'core/services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // Orientation only on mobile (not supported the same way on web)
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Background FCM handler
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // FCM background handler is NOT supported the same way on web
+  // and requires a proper firebase-messaging-sw.js service worker.
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
 
-  // Init notifications (permissions + token)
-  await NotificationService().initialize();
+  // Never block app startup if notifications fail (especially on web)
+  try {
+    await NotificationService().initialize();
+  } catch (e, st) {
+    debugPrint('NotificationService init skipped/failed: $e\n$st');
+  }
 
   runApp(
     const ProviderScope(
@@ -44,7 +55,6 @@ class _EFootArenaAppState extends ConsumerState<EFootArenaApp> {
   @override
   void initState() {
     super.initState();
-    // Deep link from notification tap
     NotificationService.onNotificationTap = ({type, route, data}) {
       final router = ref.read(appRouterProvider);
       if (route != null && route.isNotEmpty) {
